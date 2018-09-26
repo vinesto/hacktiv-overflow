@@ -2,6 +2,9 @@ const User = require('../models/users');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const axios = require('axios')
+const { registerEmail } = require('../helpers/createEmail')
+const nodeMailer = require('nodemailer')
+const CronJob = require('cron')
 require('dotenv').config()
 
 const register = function (req, res) {
@@ -17,6 +20,7 @@ const register = function (req, res) {
                     password: password
                 })
                     .then(function (newUser) {
+                        registerEmail(email, name)
                         res.status(200).json({
                             message: "new user added",
                             data: newUser
@@ -148,45 +152,45 @@ const loginFb = function (req, res) {
         method: "GET",
         url: url_user_info
     })
-    .then(function ({ data }) {
-        User.findOne({
-            email: data.email
-        })
-            .then(function (user) {
-                if (user === null) {
-                    User.create({
-                        name: data.name,
-                        email: data.email,
-                        facebookId: data.id
-                    })
-                        .then(function (newUser) {
-                            let token = jwt.sign({ id: newUser._id, name: newUser.name, email: newUser.email }, process.env.JWT_KEY)
-                            res.status(200).json({ token, newUser })
+        .then(function ({ data }) {
+            User.findOne({
+                email: data.email
+            })
+                .then(function (user) {
+                    if (user === null) {
+                        User.create({
+                            name: data.name,
+                            email: data.email,
+                            facebookId: data.id
                         })
-                        .catch(function (err) {
-                            res.status(400).json({
-                                message: "eror create user",
-                                error: err.message
+                            .then(function (newUser) {
+                                let token = jwt.sign({ id: newUser._id, name: newUser.name, email: newUser.email }, process.env.JWT_KEY)
+                                res.status(200).json({ token, newUser })
                             })
-                        })
-                } else {
-                    let token = jwt.sign({ name: user.name, email: user.email }, process.env.JWT_KEY)
-                    res.status(200).json({ token })
-                }
-            })
-            .catch(function (err) {
-                res.status(400).json({
-                    message: "user not found",
-                    error: err.message
+                            .catch(function (err) {
+                                res.status(400).json({
+                                    message: "eror create user",
+                                    error: err.message
+                                })
+                            })
+                    } else {
+                        let token = jwt.sign({ name: user.name, email: user.email }, process.env.JWT_KEY)
+                        res.status(200).json({ token })
+                    }
                 })
-            })
-    })
-    .catch(function (err) {
-        res.status(500).json({
-            message: "error login fb",
-            error: err.message
+                .catch(function (err) {
+                    res.status(400).json({
+                        message: "user not found",
+                        error: err.message
+                    })
+                })
         })
-    })
+        .catch(function (err) {
+            res.status(500).json({
+                message: "error login fb",
+                error: err.message
+            })
+        })
 
 }
 
