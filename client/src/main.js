@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 Vue.config.productionTip = false
+global.api = 'http://localhost:3000'
 
 new Vue({
   router,

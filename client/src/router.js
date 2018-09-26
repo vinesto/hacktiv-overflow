@@ -11,7 +11,31 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      children: [
+        {
+          path: '/addQuestion',
+          name: 'addQuestion',
+          component: () => import('./components/AddQuestion.vue')
+        },
+        {
+          path: '/edit/question/:id',
+          name: 'editQuestion',
+          component: () => import('./components/EditQuestion.vue')
+        },
+        {
+          path: '/question/:id',
+          name: 'detailQuestion',
+          component: () => import('./components/DetailQuestion.vue'),
+          children: [
+            {
+              path: '/edit/answer/:id',
+              name: 'editAnswer',
+              component: () => import('./components/EditAnswer.vue')
+            }
+          ]
+        }
+      ]
     },
     {
       path: '/about',
