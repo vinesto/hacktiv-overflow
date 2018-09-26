@@ -5,7 +5,7 @@
             <h2 class="card-title">Edit Answer</h2>
             <form onSubmit ="return false">
             <div class="form-group">
-                <label for="validationDefault01">Answer:{{question}}</label>
+                <label for="validationDefault01">Answer:</label>
                 <input type="text" class="form-control" id="validationDefault01" v-model="question.answer" required>
             </div>                 
             <button class="btn btn-primary" type="submit" v-on:click="updateAnswer(question._id)">Submit</button>

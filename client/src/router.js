@@ -14,6 +14,11 @@ export default new Router({
       component: Home,
       children: [
         {
+          path: '/',
+          name: 'question',
+          component: () => import('./components/ListQuestion.vue')
+        },
+        {
           path: '/addQuestion',
           name: 'addQuestion',
           component: () => import('./components/AddQuestion.vue')
@@ -26,6 +31,7 @@ export default new Router({
         {
           path: '/question/:id',
           name: 'detailQuestion',
+          props: true,
           component: () => import('./components/DetailQuestion.vue'),
           children: [
             {

@@ -16,7 +16,7 @@
 
           <!-- Blog Post -->
           <router-view></router-view>
-          <all-question/>
+          <!-- <all-question/> -->
 
         </div>
 

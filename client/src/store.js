@@ -15,7 +15,8 @@ export default new Vuex.Store({
     isDelete: '',
     answer: '',
     message: '',
-    user: ''
+    user: '',
+    questionId:''
   },
   mutations: {
     IS_LOGIN(state, payload) {
@@ -31,7 +32,10 @@ export default new Vuex.Store({
       state.myQuestion = payload
     },
     SET_QUESTION(state, payload) {
-      state.question = payload
+      state.question = {
+        ...payload
+      }
+      console.log(state.question, '================', payload)
     },
     SET_ANSWER(state, payload) {
       state.answer = payload
@@ -42,6 +46,9 @@ export default new Vuex.Store({
     SET_USER(state, payload) {
       state.user = payload
     },
+    SET_QUESTIONID(state, payload){
+      state.questionId = payload
+    }
   },
   actions: {
     login({ commit }, data) {
@@ -204,22 +211,28 @@ export default new Vuex.Store({
         })
     },
     createAnswer({ commit }, data) {
-      axios({
-        method: "POST",
-        url: `${api}/answers/${data.idQuestion}`,
-        headers: {
-          token: localStorage.getItem("token")
-        },
-        data: data
+      return new Promise((resolve, reject) => {
+        axios({
+          method: "POST",
+          url: `${api}/answers/${data.idQuestion}`,
+          headers: {
+            token: localStorage.getItem("token")
+          },
+          data: data
+        })
+          .then(function (result) {          
+            // this.getOneAnswer()
+            // router.push(`/question/${data.idQuestion}`)
+            commit('SET_QUESTIONID', data.idQuestion)
+            commit('SET_QUESTION', result)
+            resolve()
+          })
+          .catch(function (err) {
+            console.log(err.message);
+            reject()
+          })
       })
-        .then(function (result) {          
-          // this.getOneAnswer()
-          // router.push(`/question/${data.idQuestion}`)
-          commit('SET_QUESTION', result)
-        })
-        .catch(function (err) {
-          console.log(err.message);
-        })
+     
     },
     editAnswer({ commit }, data) {
       axios({
@@ -234,6 +247,7 @@ export default new Vuex.Store({
           commit('SET_QUESTION', data.data)
         })
         .catch(function (err) {
+          alert('you are not authorized')
           console.log(err.message);
         })
     },
@@ -295,6 +309,22 @@ export default new Vuex.Store({
         .catch(function (err) {
           console.log(err.message);
         })
-    }
+    },
+    loginGoogle({ commit }, data) {
+      axios({
+        method: "POST",
+        url: `${api}/users/loginGoogle`,
+        data: data
+      })
+        .then(function ({ data }) {
+          // alert('login success')
+          commit('IS_LOGIN', data.token)
+          localStorage.setItem("token", data.token)
+        })
+        .catch(function (err) {
+          alert('login failed')
+          console.log(err.message);
+        })
+    },
   },
 })

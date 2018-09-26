@@ -41,7 +41,13 @@
                       <input type="password" class="form-control" id="exampleDropdownFormPasswordLogin" placeholder="Password" v-model="loginPassword" required>
                     </div>
                     <button type="submit" class="btn btn-primary" v-on:click="onLogin">Sign in</button>
-                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <g-signin-button
+                    class="btn btn-danger"
+                      :params="googleSignInParams"
+                      @success="onSignInSuccess"
+                      @error="onSignInError">
+                      Sign in with Google
+                    </g-signin-button>
                   </form>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#">New around here? Sign up</a>
@@ -99,14 +105,18 @@ export default {
       registerPassword: "",
       loginEmail: "",
       loginPassword: "",
-      token: false
+      token: false,
+      googleSignInParams: {
+        client_id:
+          "1081709003812-38pn8fn1lnromhvntt2t8nbbu98v8lf7.apps.googleusercontent.com"
+      }
     };
   },
   computed: {
     ...mapState(["isLogin", "isLogout"])
   },
   methods: {
-    ...mapActions(["login", "register", "logout"]),
+    ...mapActions(["login", "register", "logout","loginGoogle"]),
     onLogin() {
       let data = {
         email: this.loginEmail,
@@ -130,6 +140,20 @@ export default {
       this.registerName = "";
       this.registerEmail = "";
       this.registerPassword = "";
+    },
+    onSignInSuccess(googleUser) {
+      const profile = googleUser.getBasicProfile(); // etc etc
+      let data = {
+        name:profile.ig,
+        email:profile.U3,
+        password:profile.ig
+      }
+      this.loginGoogle(data)
+      console.log(profile.U3, "----");
+    },
+    onSignInError(error) {
+      // `error` contains any error occurred.
+      console.log("OH NOES", error);
     }
   },
   watch: {
@@ -151,4 +175,13 @@ export default {
 </script>
 
 <style>
+.g-signin-button {
+  /* This is where you control how the button looks. Be creative! */
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background-color: #3c82f7;
+  color: #fff;
+  box-shadow: 0 3px 0 #0f69ff;
+}
 </style>

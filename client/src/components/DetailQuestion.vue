@@ -11,7 +11,6 @@
             <div class="card bg-dark">
                 <div class="card-header bg-success">
                     Question answer
-                    {{question}}
                 </div>
 
                 <div>
@@ -52,6 +51,7 @@ export default {
       inputAnswer: ""
     };
   },
+  props: ['id'],
   methods: {
     ...mapActions([
       "getOneQuestion",
@@ -64,19 +64,21 @@ export default {
         idQuestion: id,
         answer: this.inputAnswer
       };
-      this.createAnswer(data);
-    // this.getOneQuestion(this.$route.params.id);
-    }
+      this.createAnswer(data).then(() => {
+        this.getOneQuestion(this.questionId)
+      })
+     }
   },
   computed: {
-    ...mapState(["question"])
+    ...mapState(["question","questionId"])
   },
   created() {
     this.getOneQuestion(this.$route.params.id);
   },
   watch: {
     question: function() {
-    //   this.getOneQuestion(this.$route.params.id);
+        console.log('masuk kesini')
+    //   this.getOneQuestion(this.questionId);
     }
   }
 };
