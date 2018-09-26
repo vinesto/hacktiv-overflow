@@ -17,8 +17,6 @@ const createAnswer = function (req, res) {
                     if (question) {
                         res.status(200).json({
                             message: "add answer success",
-                            dataQuestion: question,
-                            dataAnswer: answer
                         })
                     } else {
                         res.status(200).json({
@@ -56,7 +54,8 @@ const updateAnswer = function (req, res) {
         .then(function (answer) {
             if (answer) {
                 res.status(200).json({
-                    message: "update answer success"
+                    message: "update answer success",
+                    data:answer
                 })
             } else {
                 res.status(400).json({
